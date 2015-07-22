@@ -135,7 +135,12 @@
     if (self.showAbsoluteValues) {
         titleValue = [NSString stringWithFormat:@"%.0f",currentDataItem.value];
     }else{
-        titleValue = [NSString stringWithFormat:@"%.0f%%",[self ratioForItemAtIndex:index] * 100];
+        CGFloat ratioValue = [self ratioForItemAtIndex:index] * 100;
+        if (ratioValue < 5.f) {
+            titleValue = @"";
+        }else{
+            titleValue = [NSString stringWithFormat:@"%.0f%%",ratioValue];
+        }
     }
     if(!titleText || self.showOnlyValues){
         descriptionLabel.text = titleValue;
