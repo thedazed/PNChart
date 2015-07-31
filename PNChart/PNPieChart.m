@@ -15,9 +15,6 @@
 @property (nonatomic) NSArray *items;
 @property (nonatomic) NSArray *endPercentages;
 
-@property (nonatomic) CGFloat outerCircleRadius;
-@property (nonatomic) CGFloat innerCircleRadius;
-
 @property (nonatomic) UIView         *contentView;
 @property (nonatomic) CAShapeLayer   *pieLayer;
 @property (nonatomic) NSMutableArray *descriptionLabels;
@@ -49,7 +46,7 @@
     if(self){
         _items = [NSArray arrayWithArray:items];
         _outerCircleRadius  = CGRectGetWidth(self.bounds) / 2;
-        _innerCircleRadius  = CGRectGetWidth(self.bounds) / 6;
+        _innerCircleRadius  = 0;
         
         _descriptionTextColor = [UIColor whiteColor];
         _descriptionTextFont  = [UIFont fontWithName:@"Avenir-Medium" size:18.0];
@@ -57,6 +54,7 @@
         _descriptionTextShadowOffset =  CGSizeMake(0, 1);
         _duration = 1.0;
         _shouldHighlightSectorOnTouch = YES;
+        _betweenElementsSpacing = 0.f;
         
         [super setupDefaultValues];
         [self loadDefault];
@@ -136,7 +134,7 @@
         titleValue = [NSString stringWithFormat:@"%.0f",currentDataItem.value];
     }else{
         CGFloat ratioValue = [self ratioForItemAtIndex:index] * 100;
-        if (ratioValue < 5.f) {
+        if (ratioValue < 3.f) {
             titleValue = @"";
         }else{
             titleValue = [NSString stringWithFormat:@"%.0f%%",ratioValue];
@@ -147,7 +145,7 @@
     }
     else {
         NSString* str = [titleValue stringByAppendingString:[NSString stringWithFormat:@"\n%@",titleText]];
-        descriptionLabel.text = str ;
+        descriptionLabel.text = str;
     }
     
     CGPoint center = CGPointMake(_outerCircleRadius + distance * sin(rad),
@@ -278,35 +276,35 @@
     while (percentage > [self endPercentageForItemAtIndex:index]) {
         index ++;
     }
-
+    
     if ([self.delegate respondsToSelector:@selector(userClickedOnPieIndexItem:)]) {
         [self.delegate userClickedOnPieIndexItem:index];
     }
     
-    if (self.shouldHighlightSectorOnTouch) {
-        
-        if (self.sectorHighlight) {
-            [self.sectorHighlight removeFromSuperlayer];
-        }
-        
-        PNPieChartDataItem *currentItem = [self dataItemForIndex:index];
-        
-        CGFloat red,green,blue,alpha;
-        UIColor *old = currentItem.color;
-        [old getRed:&red green:&green blue:&blue alpha:&alpha];
-        alpha /= 2;
-        UIColor *newColor = [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
-        
-        CGFloat startPercnetage = [self startPercentageForItemAtIndex:index];
-        CGFloat endPercentage   = [self endPercentageForItemAtIndex:index];
-        self.sectorHighlight =	[self newCircleLayerWithRadius:_outerCircleRadius + 5
-                                                  borderWidth:10
-                                                    fillColor:[UIColor clearColor]
-                                                  borderColor:newColor
-                                              startPercentage:startPercnetage
-                                                endPercentage:endPercentage];
-        [_contentView.layer addSublayer:self.sectorHighlight];
+    if (!self.shouldHighlightSectorOnTouch) {
+        return;
     }
+    
+    if (self.sectorHighlight) {
+        [self.sectorHighlight removeFromSuperlayer];
+    }
+    PNPieChartDataItem *currentItem = [self dataItemForIndex:index];
+    
+    CGFloat red,green,blue,alpha;
+    UIColor *old = currentItem.color;
+    [old getRed:&red green:&green blue:&blue alpha:&alpha];
+    alpha /= 2;
+    UIColor *newColor = [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
+    
+    CGFloat startPercnetage = [self startPercentageForItemAtIndex:index];
+    CGFloat endPercentage   = [self endPercentageForItemAtIndex:index];
+    self.sectorHighlight =	[self newCircleLayerWithRadius:_outerCircleRadius + 5
+                                              borderWidth:10
+                                                fillColor:[UIColor clearColor]
+                                              borderColor:newColor
+                                          startPercentage:startPercnetage
+                                            endPercentage:endPercentage];
+    [_contentView.layer addSublayer:self.sectorHighlight];
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -379,12 +377,14 @@
         rowWidth += labelsize.width + beforeLabel;
         totalWidth = self.legendStyle == PNLegendItemStyleSerial ? fmaxf(rowWidth, totalWidth) : fmaxf(totalWidth, labelsize.width + beforeLabel);
         // Add inflexion type
-        [legendViews addObject:[self drawInflexion:legendCircle * .6
-                                            center:CGPointMake(x + legendCircle / 2, y + singleRowHeight / 2)
-                                          andColor:pdata.color]];
+        CGRect legendColorViewFrame = CGRectMake(x, y + 2.f + counter * self.betweenElementsSpacing, 10.f, 10.f);
+        UIView *legendColorView = [[UIView alloc] initWithFrame:legendColorViewFrame];
+        legendColorView.layer.cornerRadius = 1.f;
+        legendColorView.backgroundColor = pdata.color;
+        [legendViews addObject:legendColorView];
         
         
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(x + beforeLabel, y, labelsize.width, labelsize.height)];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(x + beforeLabel, y + counter * self.betweenElementsSpacing, labelsize.width, labelsize.height)];
         label.text = pdata.textDescription;
         label.textColor = self.legendFontColor ? self.legendFontColor : [UIColor blackColor];
         label.font = self.legendFont ? self.legendFont : [UIFont systemFontOfSize:12.0f];
@@ -396,7 +396,7 @@
         x += self.legendStyle == PNLegendItemStyleStacked ? 0 : labelsize.width + beforeLabel;
         y += self.legendStyle == PNLegendItemStyleStacked ? labelsize.height : 0;
         
-
+        
         totalHeight = self.legendStyle == PNLegendItemStyleSerial ? fmaxf(totalHeight, rowMaxHeight + y) : totalHeight + labelsize.height;
         [legendViews addObject:label];
         counter ++;
@@ -421,7 +421,7 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGContextAddArc(context, size/2, size/ 2, size/2, 0, M_PI*2, YES);
-
+    
     
     //Set some fill color
     CGContextSetFillColorWithColor(context, color.CGColor);

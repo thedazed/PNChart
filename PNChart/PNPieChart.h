@@ -29,6 +29,9 @@
 /** Default is CGSizeMake(0, 1). */
 @property (nonatomic) CGSize   descriptionTextShadowOffset;
 
+@property (nonatomic) CGFloat outerCircleRadius;
+@property (nonatomic) CGFloat innerCircleRadius;
+
 /** Default is 1.0. */
 @property (nonatomic) NSTimeInterval duration;
 
@@ -40,6 +43,9 @@
 
 /** Default YES. */
 @property (nonatomic) BOOL shouldHighlightSectorOnTouch;
+
+/** Distance between legend elements. */
+@property (nonatomic) CGFloat betweenElementsSpacing;
 
 @property (nonatomic, weak) id<PNChartDelegate> delegate;
 
