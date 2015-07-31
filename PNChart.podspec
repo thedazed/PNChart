@@ -19,32 +19,7 @@ Pod::Spec.new do |s|
   s.version      = "0.8.5"
   s.summary      = "A simple and beautiful chart lib with animation used in Piner for iOS"
 
-  s.description  = <<-DESC
-                  #PNChart
-
-                  [![Build Status](https://travis-ci.org/kevinzhow/PNChart.png?branch=master)](https://travis-ci.org/kevinzhow/PNChart)
-
-                  You can also find swift version at here https://github.com/kevinzhow/PNChart-Swift
-
-                  A simple and beautiful chart lib with **animation** used in [Piner](https://itunes.apple.com/us/app/piner/id637706410) and [CoinsMan](https://itunes.apple.com/us/app/coinsman/id772163893) for iOS
-
-                  [![](https://dl.dropboxusercontent.com/u/1599662/pnchart.gif)](https://dl.dropboxusercontent.com/u/1599662/pnchart.gif)
-
-                  ## Requirements
-
-                  PNChart works on iOS 7.0 and later version and is compatible with ARC projects. It depends on the following Apple frameworks, which should already be included with most Xcode templates:
-
-                  * Foundation.framework
-                  * UIKit.framework
-                  * CoreGraphics.framework
-                  * QuartzCore.framework
-
-                  You will need LLVM 3.0 or later in order to build PNChart.
-
-                   DESC
-
-  s.homepage     = "https://github.com/kevinzhow/PNChart"
-  s.screenshots  = "https://camo.githubusercontent.com/e99c1bbab103c63efd561c4997a4bedb878bb2a2/68747470733a2f2f646c2e64726f70626f7875736572636f6e74656e742e636f6d2f752f313539393636322f706e63686172742e676966"
+  s.homepage     = "https://github.com/thedazed/PNChart"
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -90,7 +65,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/kevinzhow/PNChart.git", :tag => "0.8.5" }
+  s.source       = { :git => "https://github.com/thedazed/PNChart.git", :tag => "0.8.5" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
